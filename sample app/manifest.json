@@ -1,0 +1,31 @@
+{
+    "short_name": "Sample App",
+    "name": "Mobileify Sample App",
+    "theme_color": "#fff",
+    "background_color": "#fff",
+    "display": "fullscreen",
+    "orientation":"portrait",
+    "icons": [
+      {
+        "src": "assets/icon.png",
+        "type": "image/png",
+        "sizes": "48x48"
+      },
+      {
+        "src": "assets/icon.png",
+        "type": "image/png",
+        "sizes": "96x96"
+      },
+      {
+        "src": "assets/icon.png",
+        "type": "image/png",
+        "sizes": "144x144"
+      },
+      {
+        "src": "assets/icon.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      }
+    ],
+    "start_url": "/?utm_source=homescreen"
+  }
