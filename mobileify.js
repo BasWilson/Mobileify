@@ -88,6 +88,7 @@ class MobileifyApp {
             body {
                 margin: 0px;
                 padding: 0px;
+                user-select: none !important;
             }
 
             .mob-app {
@@ -106,7 +107,7 @@ class MobileifyApp {
             }
             .mob-small-header-text {
                 font-size: 18px !important;
-                font-weight: bold;
+                font-family: sfpro !important;
                 color: #007AFF;
                 line-height: 30px;
             }
@@ -125,11 +126,15 @@ class MobileifyApp {
             }
 
             .mob-header-interact-btn {
-                width: 35px;
-                height: auto;
+                width: auto;
+                height: 35px;
                 padding: 0px;
                 position: absolute;
-                right:  20px;
+                right: 20px;
+                z-index: 2;
+                color: #007AFF;
+                line-height: 33px;
+                text-align: right;
             }
 
             .mob-content {
@@ -251,22 +256,27 @@ class MobileifyNavbar {
 
     updateSelectedNavItem(navItemName) {
         if (this.selectedNavItem) {
-            document.querySelector(`[data-navitem="${this.selectedNavItem}"]`).classList.remove('mob-navbar-item-selected');
-            // Change the icon to the inctive version
-            var icon = document.querySelector(`[data-navitem="${this.selectedNavItem}"]`).childNodes[1];
-            icon.src = icon.src.replace('_active.png', '.png');
+            if (document.querySelector(`[data-navitem="${this.selectedNavItem}"]`)) {
+                document.querySelector(`[data-navitem="${this.selectedNavItem}"]`).classList.remove('mob-navbar-item-selected');
+                // Change the icon to the inctive version
+                var icon = document.querySelector(`[data-navitem="${this.selectedNavItem}"]`).childNodes[1];
+                icon.src = icon.src.replace('_active.png', '.png');
+            }
+
         }
 
         if (!navItemName)
             navItemName = this.navItems[0].text;
 
-        document.querySelector(`[data-navitem="${navItemName}"]`).classList.add('mob-navbar-item-selected');
+        if (document.querySelector(`[data-navitem="${navItemName}"]`))
+            document.querySelector(`[data-navitem="${navItemName}"]`).classList.add('mob-navbar-item-selected');
 
         // Change the icon to the active version
-        var icon = document.querySelector(`[data-navitem="${navItemName}"]`).childNodes[1];
-        var tempSrc = icon.src.replace('.png', '');
-        tempSrc = tempSrc + '_active.png';
-        icon.src = tempSrc;
+        if (document.querySelector(`[data-navitem="${navItemName}"]`)) {
+            var icon = document.querySelector(`[data-navitem="${navItemName}"]`).childNodes[1];
+            icon.src = icon.src.replace('.png', '_active.png');
+        }
+
         // end icon change
 
         this.selectedNavItem = navItemName;
@@ -336,7 +346,7 @@ class MobileifyNavigator {
 
         // Lock the body scroll, webkit fix for ios
         bodyScrollLock.disableBodyScroll(document.querySelector(`#mob-view-${renderedView.name}`));
-
+        
         document.querySelector('#mob-header-text').innerHTML = renderedView.properties.name;
         document.querySelector(`#mob-view-${renderedView.name}`).style.display = 'block';
 
@@ -355,21 +365,27 @@ class MobileifyNavigator {
             document.querySelector('.mob-header-back').style.padding = '10px 10px';
             document.querySelector('.mob-header').style.lineHeight = '50px';
             setTimeout(() => {
-                document.querySelector('.mob-header-back').setAttribute("onClick", `app.changeView('${this.views[viewIndex].previousViewName.replace('_', ' ')}')`)
+                document.querySelector('.mob-header-back-btn').setAttribute( "onClick", `app.changeView('${this.views[viewIndex].previousViewName.replace('_', ' ')}')` )
+                document.querySelector('#mob-header-text').setAttribute( "onClick", `app.changeView('${this.views[viewIndex].previousViewName.replace('_', ' ')}')` )
             }, 100);
 
             // hide the nav bar
-            if (document.querySelector('.mob-navbar'))
+            if (document.querySelector('.mob-navbar')) {
                 document.querySelector('.mob-navbar').style.display = 'none';
+                document.querySelector('.mob-content').style.bottom = '0px';
+            }
 
         } else {
             document.querySelector('.mob-header-back-btn').style.display = 'none';
             document.querySelector('.mob-header').style.lineHeight = '35px';
             document.querySelector('.mob-header-back').style.padding = '10px 20px';
             document.querySelector('#mob-header-text').classList.remove("mob-small-header-text");
-            document.querySelector('.mob-header-back').removeAttribute("onClick")
-            if (document.querySelector('.mob-navbar'))
+            document.querySelector('.mob-header-back-btn').removeAttribute( "onClick" )
+            document.querySelector('#mob-header-text').removeAttribute( "onClick" )
+            if (document.querySelector('.mob-navbar')) {
                 document.querySelector('.mob-navbar').style.display = 'flex';
+                document.querySelector('.mob-content').style.bottom = '90px';
+            }
         }
         // End of back button
 
@@ -377,12 +393,15 @@ class MobileifyNavigator {
         if (renderedView.properties.actionButton) {
             if (document.querySelector('.mob-header-interact-btn'))
                 document.querySelector('.mob-header-interact-btn').remove();
-            document.querySelector('.mob-header-back').innerHTML += `<img class="mobileify mob-header-interact-btn" onclick="${renderedView.properties.actionButton.onclick}()" src="${renderedView.properties.actionButton.icon}" />`;
+                if (renderedView.properties.actionButton.text)
+                    document.querySelector('.mob-header-back').innerHTML += `<p class="mobileify mob-header-interact-btn" onclick="${renderedView.properties.actionButton.onclick}">${renderedView.properties.actionButton.text}</p>`;
+                else
+                    document.querySelector('.mob-header-back').innerHTML += `<img class="mobileify mob-header-interact-btn" onclick="${renderedView.properties.actionButton.onclick}" src="${renderedView.properties.actionButton.icon}" />`;
         } else {
             if (document.querySelector('.mob-header-interact-btn'))
                 document.querySelector('.mob-header-interact-btn').remove();
         }
-
+        
         this.navigating = false;
         this.views[viewIndex].loaded = true;
         if (this.views[viewIndex].properties.onload) {
@@ -395,6 +414,7 @@ class MobileifyNavigator {
     addView(view) {
         this.views.push(view);
     }
+
 }
 
 class MobileifyView {

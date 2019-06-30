@@ -4,9 +4,8 @@ var APP_NAME = 'Mobileify Sample App',
 var filesToCache = [
   './',
   './?utm_source=homescreen',
-  './js/mobileify.js',
-  './js/themeify.js',
-  './js/scrolllock.min.js',
+  '../js/mobileify.js',
+  '../js/themeify.js',
   './js/app.js',
 ];
 
